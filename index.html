@@ -5,16 +5,55 @@
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@500;600;700;900&display=swap" rel="stylesheet">
   <title>Snek Game Client</title>
 </head>
 <style>
-  canvas{
-    border:1px solid black;
+  html,body{
+    margin:0;
+    padding:0;
   }
+
+  body{
+    width:100vw;
+    height:100vh;
+
+    background:#333333;
+    color:#fff;
+
+    font-family: 'Noto Sans', sans-serif;
+    text-align:center;
+
+    display:flex;
+    flex-direction:column;
+    align-items: center;
+
+
+  }
+
+  main{
+    height:100%;
+    display:flex;
+    flex-direction:column;
+    justify-content: center;
+    align-items: center;
+  }
+  canvas{
+    background:white;
+
+
+
+    border:0.5em solid #999999;
+  }
+
+
 </style>
 <body>
   <header>
-    <h1>Snek Game on Socket.io</h1>
+    <h1>🐍🐍🐍 Snek game! 🐍🐍🐍</h1>
+    <p>IP: 165.227.47.243 | PORT: 50541</p>
   </header>
   <main>
     <canvas id="snek"></canvas>
@@ -24,7 +63,7 @@
   <script>
 
     let localGrid = null
-    const socket = io("ws://localhost:8080");
+    const socket = io("ws://165.227.47.243:8081");
 
     const canvas = document.getElementById("snek");
     const ctx = canvas.getContext("2d");
@@ -38,10 +77,15 @@
 
     socket.on("grid", grid => {
       localGrid = grid
-      console.log("grid updated")
-
       ctx.canvas.width = grid.width * 10
       ctx.canvas.height = grid.height * 10
+
+      const mainHeight = document.querySelector("main").clientHeight
+      const canvasHeight = document.querySelector("canvas").clientHeight
+
+      document.querySelector("canvas").style.scale = 0.9 * (mainHeight / canvasHeight)
+
+
 
       for(const id in grid.sneks){
         const snek = grid.sneks[id]
@@ -62,6 +106,17 @@
         ctx.fillRect(food[0] * 10, food[1] * 10, 10, 10)
       }
     })
+
+
+    window.addEventListener("resize", () => {
+        const mainHeight = document.querySelector("main").clientHeight
+      const canvasHeight = document.querySelector("canvas").clientHeight
+
+      document.querySelector("canvas").style.scale = 0.9 * (mainHeight / canvasHeight)
+      })
+
+
+
 
 
   </script>

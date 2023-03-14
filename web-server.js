@@ -1,4 +1,4 @@
-const HTTP_PORT = 8080;
+const HTTP_PORT = 8081;
 
 const http = require("http");
 const fs = require("fs");
@@ -15,16 +15,14 @@ const httpServer = http.createServer((req, res) => {
 });
 
 const io = new Server(httpServer);
-const directions = ["left", "right", "up", "down"];
-let iterator = 0;
 
 io.on("connection", (socket) => {
   console.log("client connected");
   socket.emit("grid", grid);
+});
 
-  snekEvents.on("refresh", () => {
-    socket.emit("grid", grid);
-  });
+snekEvents.on("refresh", () => {
+  io.emit("grid", grid);
 });
 
 httpServer.listen(HTTP_PORT);

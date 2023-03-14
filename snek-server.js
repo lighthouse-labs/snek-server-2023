@@ -239,11 +239,21 @@ const snekServer = net.createServer((connection) => {
   helpers.ensureMinFood();
   snekEvents.emit("refresh");
 
-  connection.on("end", helpers.removeSnake);
-  connection.on("error", helpers.removeSnake);
-  connection.on("timeout", helpers.removeSnake);
+  connection.on("end", () => helpers.removeSnake(snekId));
+  connection.on("error", () => helpers.removeSnake(snekId));
+  connection.on("timeout", () => helpers.removeSnake(snekId));
+
+  const killSnek = () => {
+    helpers.removeSnake(snekId);
+    connection.write("You're dead since you idled!");
+    connection.end();
+  };
+  let snekTimer = setTimeout(killSnek, 5000);
 
   connection.on("data", (string) => {
+    clearTimeout(snekTimer);
+    snekTimer = setTimeout(killSnek, 5000);
+
     const moveCommand = string.slice(0, 4);
     const sayCommand = string.slice(0, 3);
     const nameCommand = string.slice(0, 4);
@@ -253,6 +263,8 @@ const snekServer = net.createServer((connection) => {
       const direction = string.slice(6);
       const { err } = helpers.moveSnek(snekId, direction);
       if (err === "collision") {
+        connection.write("You're dead since you collided with something!");
+
         connection.end();
       }
     }
