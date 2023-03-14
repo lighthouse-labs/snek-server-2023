@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <title>Snek Game Client</title>
+</head>
+<style>
+  canvas{
+    border:1px solid black;
+  }
+</style>
+<body>
+  <header>
+    <h1>Snek Game on Socket.io</h1>
+  </header>
+  <main>
+    <canvas id="snek"></canvas>
+  </main>
+</body>
+</html>
+  <script>
+
+    let localGrid = null
+    const socket = io("ws://localhost:8080");
+
+    const canvas = document.getElementById("snek");
+    const ctx = canvas.getContext("2d");
+    ctx.transform(1, 0, 0, -1, 0, canvas.height)
+    const addSnek = (socket) => {
+      socket.emit("newSnek", 1)
+    }
+    const addFood = (socket) => {
+      socket.emit("newFood", 1)
+    }
+
+    socket.on("grid", grid => {
+      localGrid = grid
+      console.log("grid updated")
+
+      ctx.canvas.width = grid.width * 10
+      ctx.canvas.height = grid.height * 10
+
+      for(const id in grid.sneks){
+        const snek = grid.sneks[id]
+
+        ctx.fillStyle = snek.color.head
+        ctx.fillRect(snek.body[0][0] * 10, snek.body[0][1] * 10, 10, 10)
+        ctx.fillStyle = snek.color.body
+        for(let i = 1; i < snek.body.length; i++){
+          const part = snek.body[i]
+          ctx.fillRect(part[0] * 10, part[1] * 10, 10, 10)
+        }
+        console.log(snek)
+        ctx.fillText(snek.message,(snek.body[0][0] + 1) * 10, (snek.body[0][1] * 10) )
+      }
+
+      for(const food of grid.foods){
+        ctx.fillStyle = 'black'
+        ctx.fillRect(food[0] * 10, food[1] * 10, 10, 10)
+      }
+    })
+
+
+  </script>
