@@ -174,7 +174,7 @@ const generateSnekHelpers = (grid, snekEvents) => {
     };
 
     if (!Object.keys(directions).includes(direction)) {
-      return;
+      return { err: null };
     }
     const currentSnek = grid.sneks[id];
 
