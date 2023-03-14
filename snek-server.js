@@ -172,6 +172,10 @@ const generateSnekHelpers = (grid, snekEvents) => {
       up: [0, -1],
       down: [0, 1],
     };
+
+    if (!Object.keys(directions).includes(direction)) {
+      return;
+    }
     const currentSnek = grid.sneks[id];
 
     const head = currentSnek.body[0];
